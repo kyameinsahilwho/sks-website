@@ -1,8 +1,8 @@
 import { BlogCard } from "@/components/sections/blog/blog-card";
 import { getAllBlogPosts } from "@/lib/blog";
 
-export default function BlogsPage() {
-  const blogPosts = getAllBlogPosts();
+export default async function BlogsPage() {
+  const blogPosts = await getAllBlogPosts();
 
   return (
     <div className="container py-12">
