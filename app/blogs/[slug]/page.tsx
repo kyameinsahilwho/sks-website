@@ -1,4 +1,4 @@
-import { getBlogPost, blogPosts } from '@/lib/blog';
+import { getBlogPost, getAllBlogPosts } from '@/lib/blog';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { BlogHeader } from '@/components/sections/blog/blog-header';
@@ -11,7 +11,8 @@ interface BlogPostPageProps {
 }
 
 export function generateStaticParams() {
-  return blogPosts.map((post) => ({
+  const posts = getAllBlogPosts();
+  return posts.map((post) => ({
     slug: post.slug,
   }));
 }

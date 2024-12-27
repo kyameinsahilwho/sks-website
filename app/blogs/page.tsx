@@ -1,7 +1,9 @@
 import { BlogCard } from "@/components/sections/blog/blog-card";
-import { blogPosts } from "@/lib/blog";
+import { getAllBlogPosts } from "@/lib/blog";
 
 export default function BlogsPage() {
+  const blogPosts = getAllBlogPosts();
+
   return (
     <div className="container py-12">
       <h1 className="mb-8 text-4xl font-bold">Blog</h1>
