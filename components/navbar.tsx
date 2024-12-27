@@ -20,15 +20,31 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-sm">
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="font-pacifico text-2xl relative group">
+      <div className="container flex h-14 items-center justify-between">
+        {/* Mobile Menu Button - Left */}
+        <div className="md:hidden">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsOpen(!isOpen)}
+            className="hover:bg-accent/50 transition-colors duration-300"
+          >
+            {isOpen ? (
+              <X className="h-5 w-5 transform rotate-0 transition-transform duration-300" />
+            ) : (
+              <Menu className="h-5 w-5 transform rotate-0 transition-transform duration-300" />
+            )}
+          </Button>
+        </div>
+
+        {/* Logo */}
+        <Link href="/" className="font-pacifico text-xl relative group">
           <span className="bg-gradient-to-r from-emerald-500 to-cyan-700 bg-clip-text text-transparent hover:opacity-90 transition-opacity duration-300">
             Sahil Kumar Singh
           </span>
@@ -36,7 +52,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex md:items-center md:space-x-8">
+        <div className="hidden md:flex md:items-center md:space-x-6">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -57,23 +73,11 @@ export function Navbar() {
               ></span>
             </Link>
           ))}
-          <ThemeToggle />
         </div>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsOpen(!isOpen)}
-            className="hover:bg-accent/50 transition-colors duration-300"
-          >
-            {isOpen ? (
-              <X className="h-6 w-6 transform rotate-0 transition-transform duration-300" />
-            ) : (
-              <Menu className="h-6 w-6 transform rotate-0 transition-transform duration-300" />
-            )}
-          </Button>
+        {/* Theme Toggle - Right */}
+        <div className="flex items-center">
+          <ThemeToggle />
         </div>
       </div>
 
@@ -84,15 +88,15 @@ export function Navbar() {
           isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         )}
       >
-        <div className="flex flex-col space-y-4 pb-6 pt-2">
+        <div className="flex flex-col space-y-2 pb-4 pt-2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "text-lg px-4 py-2 rounded-md transition-all duration-300",
+                "text-base px-4 py-2 rounded-md transition-all duration-300",
                 pathname === link.href
-                  ? "text-primary bg-accent/50"
+                  ? "text-primary-foreground bg-accent"
                   : "text-muted-foreground hover:text-primary hover:bg-accent/30"
               )}
               onClick={() => setIsOpen(false)}
@@ -100,9 +104,6 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <div className="pt-2 px-4">
-            <ThemeToggle />
-          </div>
         </div>
       </div>
     </nav>

@@ -11,7 +11,7 @@ function ThemeToggleButton() {
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       className="hover:bg-accent/50"
     >
       <Sun className="h-5 w-5 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
