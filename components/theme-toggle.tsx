@@ -23,7 +23,7 @@ function ThemeToggleButton() {
 
 export function ThemeToggle() {
   return (
-    <ThemeProvider defaultTheme="light" attribute="class">
+    <ThemeProvider attribute="class">
       <ThemeToggleButton />
     </ThemeProvider>
   );
