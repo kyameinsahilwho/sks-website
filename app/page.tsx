@@ -13,7 +13,7 @@ export default function Home() {
           <defs>
             <linearGradient
               id="hexGradient"
-              x1="0%"
+              x1="0% "
               y1="0%"
               x2="100%"
               y2="100%"
