@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,13 @@ export default function AdminLogin() {
   const router = useRouter();
   const { toast } = useToast()
 
+  useEffect(() => {
+    // Cleanup function
+    return () => {
+      // Ensure any pending navigation is handled
+      router.prefetch('/admin/dashboard');
+    };
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
