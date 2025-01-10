@@ -4,6 +4,7 @@ import { Providers } from '@/components/providers';
 import { Navbar } from '@/components/navbar';
 import { Vibur, Beth_Ellen } from 'next/font/google';
 import { Inter } from 'next/font/google';
+import { Toaster } from '@/components/ui/toaster';
 
 const pacifico = Beth_Ellen({ 
   weight: '400',
@@ -33,6 +34,7 @@ export default function RootLayout({
           <div className="min-h-screen bg-background">
             <Navbar />
             <main>{children}</main>
+            <Toaster />
           </div>
         </Providers>
       </body>
