@@ -35,7 +35,7 @@ export default function AdminLogin() {
     const data = await res.json();
 
     if (data.success) {
-      router.replace('/admin/dashboard');
+      router.push('/admin/dashboard');
     } else {
       toast({
         title: "Authentication failed",
