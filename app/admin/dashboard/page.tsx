@@ -34,6 +34,15 @@ export default function AdminDashboard() {
   };
 
   const handleCreatePost = async () => {
+    if (!title.trim() || !content.trim()) {
+      toast({
+        title: "Error",
+        description: "Title and content cannot be empty",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const res = await fetch('/api/posts', {
         method: 'POST',
@@ -73,6 +82,8 @@ export default function AdminDashboard() {
     try {
       const res = await fetch(`/api/posts/${id}`, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
       });
 
       if (res.ok) {
@@ -125,7 +136,7 @@ export default function AdminDashboard() {
             
             <TabsContent value="manage">
               <div className="space-y-4">
-                {posts.map((post) => (
+                {Array.isArray(posts) && posts.map((post) => (
                   <Card key={post.id}>
                     <CardContent className="pt-6">
                       <div className="flex justify-between items-start">

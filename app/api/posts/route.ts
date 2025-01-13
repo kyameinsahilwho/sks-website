@@ -15,7 +15,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json(post);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create post' }, { status: 500 });
+    return NextResponse.json({ error: `Failed to fetch posts + ${error} ` }, { status: 500 });
+
   }
 }
 
@@ -31,13 +32,13 @@ export async function PUT(request: Request) {
   
       return NextResponse.json(post);
     } catch (error) {
-      return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
+      return NextResponse.json({ error: `Failed to fetch posts + ${error} ` }, { status: 500 });
     }
   }
   
   export async function DELETE(request: Request) {
     try {
-      const id = request.url.split('/').pop();
+      const { id } = await request.json();
       
       await prisma.post.delete({
         where: { id },
@@ -45,7 +46,7 @@ export async function PUT(request: Request) {
   
       return NextResponse.json({ success: true });
     } catch (error) {
-      return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
+      return NextResponse.json({ error: `Failed to delete post: ${error}` }, { status: 500 });
     }
   }
 
@@ -57,6 +58,6 @@ export async function GET() {
     
     return NextResponse.json(posts);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
+    return NextResponse.json({ error: `Failed to fetch posts + ${error} ` }, { status: 500 });
   }
 }

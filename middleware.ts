@@ -1,45 +1,33 @@
 import { NextResponse } from 'next/server';
-import { verify } from 'jsonwebtoken';
 import type { NextRequest } from 'next/server';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export function middleware(request: NextRequest) {
   const adminToken = request.cookies.get('admin-token');
 
-  // Extract the path
-  const path = request.nextUrl.pathname;
-
-  // Handle login page specially
-  if (path === '/admin/login') {
-    // If we have a valid token, redirect to dashboard
-    if (adminToken) {
-      try {
-        verify(adminToken.value, JWT_SECRET);
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    // Allow access to the login page without redirection loop
+    if (request.nextUrl.pathname === '/admin/login') {
+      if (adminToken) {
+        // If token exists, redirect to dashboard
         return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-      } catch {
-        // Invalid token - let them access login page
-        return NextResponse.next();
       }
+      // No token or invalid token, allow access to login page
+      return NextResponse.next();
     }
-    // No token - let them access login page
+
+    // For other admin routes, check if token exists
+    if (!adminToken) {
+      // No token, redirect to login page
+      return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+
     return NextResponse.next();
   }
 
-  // Protect all other /admin/* routes
-  if (path.startsWith('/admin')) {
-    try {
-      if (!adminToken) {
-        return NextResponse.redirect(new URL('/admin/login', request.url));
-      }
-      verify(adminToken.value, JWT_SECRET);
-      return NextResponse.next();
-    } catch {
-      // Invalid token
-      return NextResponse.redirect(new URL('/admin/login', request.url));
-    }
-  }
-
-  // All other routes proceed normally
+  // Allow all other requests to proceed
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: '/admin/:path*',
+};
