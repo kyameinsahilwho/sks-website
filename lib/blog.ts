@@ -1,87 +1,63 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { compileMDX } from 'next-mdx-remote/rsc';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeSlug from 'rehype-slug';
-import remarkGfm from 'remark-gfm';
+import prisma from './prisma';
+import { isValidObjectId } from './utils';
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
 export interface BlogPost {
+  id: string;
   title: string;
-  description: string;
-  date: string;
-  slug: string;
-  content: any; // Changed to accept compiled MDX
+  content: string;
+  published: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  const fileNames = fs.readdirSync(postsDirectory);
-  const allPostsData = await Promise.all(
-    fileNames
-      .filter((fileName) => fileName.endsWith('.mdx'))
-      .map(async (fileName) => {
-        const slug = fileName.replace(/\.mdx$/, '');
-        const fullPath = path.join(postsDirectory, fileName);
-        const fileContents = fs.readFileSync(fullPath, 'utf8');
-        const { data, content } = matter(fileContents);
-        
-        const { content: compiledContent } = await compileMDX({
-          source: content,
-          options: { 
-            parseFrontmatter: true,
-            mdxOptions: {
-              remarkPlugins: [remarkGfm],
-              rehypePlugins: [
-                rehypeSlug,
-                rehypeHighlight
-              ],
-            }
-          }
-        });
-
-        return {
-          slug,
-          title: data.title,
-          description: data.description,
-          date: data.date,
-          content: compiledContent
-        };
-    })
-  );
-
-  return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
-}
-
-export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
   try {
-    const fullPath = path.join(postsDirectory, `${slug}.mdx`);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
-    const { data, content } = matter(fileContents);
-
-    const { content: compiledContent } = await compileMDX({
-      source: content,
-      options: { 
-        parseFrontmatter: true,
-        mdxOptions: {
-          remarkPlugins: [remarkGfm],
-          rehypePlugins: [
-            rehypeSlug,
-            rehypeHighlight
-          ],
-        }
-      }
+    const posts = await prisma.post.findMany({
+      where: {
+        published: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
+    return posts.map(post => ({
+      ...post,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+    }));
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return [];
+  }
+}
+
+export async function getBlogPost(id: string): Promise<BlogPost | null> {
+  if (!isValidObjectId(id)) {
+    return null;
+  }
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    
+    if (!post) return null;
+
     return {
-      slug,
-      title: data.title,
-      description: data.description,
-      date: data.date,
-      content: compiledContent
+      ...post,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
     };
-  } catch {
-    return undefined;
+  } catch (error) {
+    console.error('Error fetching blog post:', error);
+    return null;
   }
 }

@@ -2,16 +2,39 @@ import { BlogCard } from "@/components/sections/blog/blog-card";
 import { getAllBlogPosts } from "@/lib/blog";
 
 export default async function BlogsPage() {
-  const blogPosts = await getAllBlogPosts();
+  try {
+    const blogPosts = await getAllBlogPosts();
+    console.log('Fetched blog posts with IDs:', blogPosts.map(p => p.id)); // Debug log
 
-  return (
-    <div className="container py-12">
-      <h1 className="mb-8 text-4xl font-bold">Blog</h1>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {blogPosts?.map((post) => (
-          <BlogCard key={post.slug} {...post} />
-        ))}
+    if (!blogPosts || blogPosts.length === 0) {
+      return (
+        <div className="container py-12">
+          <h1 className="mb-8 text-4xl font-bold">Blog</h1>
+          <p>No blog posts found.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="container py-12">
+        <h1 className="mb-8 text-4xl font-bold">Blog</h1>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {blogPosts
+            .filter(post => post.published)
+            .map((post) => (
+              <BlogCard 
+                key={post.id} 
+                id={post.id.toString()} // Ensure ID is a string
+                title={post.title}
+                description={post.content.substring(0, 150) + '...'}
+                date={post.createdAt.toLocaleDateString()}
+              />
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } catch (error) {
+    console.error('Error in BlogsPage:', error);
+    throw error; // This will trigger the error boundary
+  }
 }

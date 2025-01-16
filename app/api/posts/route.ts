@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
+import { isValidObjectId } from '@/lib/utils';
 
 const PostSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -28,9 +29,17 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const id = request.url.split('/').pop();
     const data = await request.json();
-    const validated = PostSchema.parse(data);
+    const { id, ...updateData } = data;
+    
+    if (!isValidObjectId(id)) {
+      return NextResponse.json(
+        { error: 'Invalid post ID format' }, 
+        { status: 400 }
+      );
+    }
+
+    const validated = PostSchema.parse(updateData);
     
     const post = await prisma.post.update({
       where: { id },
@@ -50,6 +59,13 @@ export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
     
+    if (!isValidObjectId(id)) {
+      return NextResponse.json(
+        { error: 'Invalid post ID format' }, 
+        { status: 400 }
+      );
+    }
+
     await prisma.post.delete({
       where: { id },
     });
@@ -63,11 +79,26 @@ export async function DELETE(request: Request) {
 export async function GET() {
   try {
     const posts = await prisma.post.findMany({
+      where: {
+        published: true,
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        published: true,
+        createdAt: true,
+      },
       orderBy: { createdAt: 'desc' },
     });
     
+    console.log('API: Fetched posts:', posts); // Debug log
     return NextResponse.json(posts);
   } catch (error) {
-    return NextResponse.json({ error: `Failed to fetch posts: ${error}` }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch posts' }, 
+      { status: 500 }
+    );
   }
 }

@@ -7,10 +7,10 @@ interface BlogCardProps {
   title: string;
   description: string;
   date: string;
-  slug: string;
+  id: string;
 }
 
-export function BlogCard({ title, description, date, slug }: BlogCardProps) {
+export function BlogCard({ title, description, date, id }: BlogCardProps) {
   return (
     <Card className="overflow-hidden transition-colors hover:bg-accent/10">
       <CardHeader>
@@ -20,7 +20,7 @@ export function BlogCard({ title, description, date, slug }: BlogCardProps) {
       <CardContent>
         <p className="mb-4 text-muted-foreground">{description}</p>
         <Button asChild variant="ghost" className="group gap-2">
-          <Link href={`/blogs/${slug}`}>
+          <Link href={`/blogs/${id}`}>
             Read More 
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
