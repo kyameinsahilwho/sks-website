@@ -21,15 +21,22 @@ export default async function BlogsPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {blogPosts
             .filter(post => post.published)
-            .map((post) => (
-              <BlogCard 
-                key={post.id} 
-                id={post.id.toString()} // Ensure ID is a string
-                title={post.title}
-                description={post.content.substring(0, 150) + '...'}
-                date={post.createdAt.toLocaleDateString()}
-              />
-          ))}
+            .map((post) => {
+              const plainDescription = post.content
+                .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+                .replace(/[#*`_~]/g, '')
+                .substring(0, 150) + '...';
+
+              return (
+                <BlogCard 
+                  key={post.id} 
+                  id={post.id.toString()} // Ensure ID is a string
+                  title={post.title}
+                  description={plainDescription}
+                  date={post.createdAt.toLocaleDateString()}
+                />
+              );
+            })}
         </div>
       </div>
     );

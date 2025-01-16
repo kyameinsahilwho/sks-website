@@ -27,9 +27,15 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     const post = await getBlogPost(params.id);
     if (!post || !post.published) return { title: 'Post Not Found' };
     
+    // Strip HTML and markdown for meta description
+    const plainText = post.content
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove markdown links
+      .replace(/[#*`_~]/g, '') // Remove markdown syntax
+      .substring(0, 160);
+    
     return {
       title: `${post.title} | Sahil Kumar Singh`,
-      description: post.content.substring(0, 160),
+      description: plainText,
     };
   } catch (error) {
     return { title: 'Error' };

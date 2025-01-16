@@ -1,15 +1,17 @@
 import 'highlight.js/styles/github-dark.css';
+import { parseMarkdown } from '@/lib/markdown';
 
 interface BlogContentProps {
   content: string;
 }
 
 export function BlogContent({ content }: BlogContentProps) {
+  const htmlContent = parseMarkdown(content);
+  
   return (
-    <div className="prose prose-slate max-w-none">
-      {content.split('\n').map((paragraph, index) => (
-        <p key={index}>{paragraph}</p>
-      ))}
-    </div>
+    <div 
+      className="prose prose-slate dark:prose-invert max-w-none"
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    />
   );
 }
