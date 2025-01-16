@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navLinks = [
   { href: "/about", label: "Read Me" },
@@ -29,18 +30,37 @@ export function Navbar() {
       <div className="container flex h-14 items-center justify-between">
         {/* Mobile Menu Button - Left */}
         <div className="md:hidden">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsOpen(!isOpen)}
-            className="hover:bg-accent/50 transition-colors duration-300"
-          >
-            {isOpen ? (
-              <X className="h-5 w-5 transform rotate-0 transition-transform duration-300" />
-            ) : (
-              <Menu className="h-5 w-5 transform rotate-0 transition-transform duration-300" />
-            )}
-          </Button>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-accent/50 transition-colors duration-300"
+              >
+                <Menu className={`h-5 w-5 transform rotate-0 transition-transform duration-300 ${isOpen ? 'hidden' : 'block'}`} />
+                <X className={`h-5 w-5 transform rotate-0 transition-transform duration-300 ${isOpen ? 'block' : 'hidden'}`} />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-4">
+              <div className="flex flex-col space-y-2 my-5">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "text-base px-4 py-2 rounded-md transition-all duration-300",
+                      pathname === link.href
+                        ? "text-primary-foreground bg-accent"
+                        : "text-muted-foreground hover:text-primary hover:bg-accent/30"
+                    )}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
 
         {/* Logo */}
@@ -78,32 +98,6 @@ export function Navbar() {
         {/* Theme Toggle - Right */}
         <div className="flex items-center">
           <ThemeToggle />
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <div
-        className={cn(
-          "container md:hidden overflow-hidden transition-all duration-300 ease-in-out",
-          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        )}
-      >
-        <div className="flex flex-col space-y-2 pb-4 pt-2">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "text-base px-4 py-2 rounded-md transition-all duration-300",
-                pathname === link.href
-                  ? "text-primary-foreground bg-accent"
-                  : "text-muted-foreground hover:text-primary hover:bg-accent/30"
-              )}
-              onClick={() => setIsOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
         </div>
       </div>
     </nav>

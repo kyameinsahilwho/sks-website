@@ -4,9 +4,31 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import dynamic from 'next/dynamic';
+import '@mdxeditor/editor/style.css';
+import {
+  headingsPlugin,
+  listsPlugin,
+  quotePlugin,
+  thematicBreakPlugin,
+  markdownShortcutPlugin,
+  toolbarPlugin,
+  UndoRedo,
+  BoldItalicUnderlineToggles,
+  CreateLink,
+  BlockTypeSelect,
+  CodeToggle,
+  linkPlugin,
+  linkDialogPlugin,
+  codeBlockPlugin,
+} from '@mdxeditor/editor';
+
+const MDXEditor = dynamic(
+  () => import('@mdxeditor/editor').then((mod) => mod.MDXEditor),
+  { ssr: false }
+);
 
 interface Post {
   id: string;
@@ -50,7 +72,7 @@ export default function AdminDashboard() {
         body: JSON.stringify({
           title,
           content,
-          published: true
+          published: true,
         }),
       });
 
@@ -102,6 +124,28 @@ export default function AdminDashboard() {
     }
   };
 
+  const editorPlugins = [
+    headingsPlugin(),
+    listsPlugin(),
+    quotePlugin(),
+    thematicBreakPlugin(),
+    markdownShortcutPlugin(),
+    linkPlugin(),
+    linkDialogPlugin(),
+    codeBlockPlugin(),
+    toolbarPlugin({
+      toolbarContents: () => (
+        <>
+          <UndoRedo />
+          <BoldItalicUnderlineToggles />
+          <BlockTypeSelect />
+          <CreateLink />
+          <CodeToggle />
+        </>
+      )
+    })
+  ];
+
   return (
     <div className="container py-10">
       <Card>
@@ -123,15 +167,17 @@ export default function AdminDashboard() {
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
-              <div className="space-y-2">
-                <Textarea
-                  placeholder="Content (Markdown)"
-                  className="min-h-[300px] font-mono"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
+              <div className="space-y-2 prose-container">
+                <MDXEditor
+                  markdown={content}
+                  onChange={(value: string) => setContent(value)}
+                  plugins={editorPlugins}
+                  contentEditableClassName="prose dark:prose-invert max-w-none min-h-[200px] p-4"
                 />
               </div>
-              <Button onClick={handleCreatePost}>Create Post</Button>
+              <Button onClick={handleCreatePost}>
+                {editingPost ? 'Update Post' : 'Create Post'}
+              </Button>
             </TabsContent>
             
             <TabsContent value="manage">

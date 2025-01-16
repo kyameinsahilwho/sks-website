@@ -88,3 +88,26 @@
 .animate-float-fast {
   animation: float-fast 4s ease-in-out infinite;
 }
+
+.prose-container {
+  --mdxeditor-bg: hsl(var(--background));
+  --mdxeditor-text: hsl(var(--foreground));
+  --mdxeditor-border: hsl(var(--border));
+}
+
+.prose-container .mdxeditor {
+  border: 1px solid var(--mdxeditor-border);
+  border-radius: 0.5rem;
+  background-color: var(--mdxeditor-bg);
+  color: var(--mdxeditor-text);
+}
+
+.prose-container .mdxeditor-toolbar {
+  border-bottom: 1px solid var(--mdxeditor-border);
+  background-color: var(--mdxeditor-bg);
+}
+
+/* Add support for dark mode */
+[data-theme="dark"] .prose-container {
+  --mdxeditor-toolbar-bg: hsl(var(--background));
+}
