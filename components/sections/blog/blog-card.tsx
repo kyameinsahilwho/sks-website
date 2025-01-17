@@ -16,9 +16,12 @@ interface BlogCardProps {
 
 }
 
-export function BlogCard({ title, description, date, slug, published = true }: BlogCardProps) {
+export function BlogCard({ title, description, date, slug, published = true, coverImage }: BlogCardProps) {
   return (
     <Card className={`overflow-hidden transition-colors hover:bg-accent/10 ${!published ? "opacity-60" : ""}`}>
+      {coverImage && (
+        <img src={coverImage} alt={title} className="w-full h-48 object-cover" />
+      )}
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle>{title}</CardTitle>

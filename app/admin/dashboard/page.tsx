@@ -42,6 +42,7 @@ interface Post {
   metaDescription?: string;
   keywords?: string;
   tags: string[];
+  coverImage?: string;
 }
 
 export default function AdminDashboard() {
@@ -54,6 +55,7 @@ export default function AdminDashboard() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
+  const [coverImage, setCoverImage] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -87,6 +89,7 @@ export default function AdminDashboard() {
           metaDescription,
           keywords,
           tags,
+          coverImage,
         }),
       });
 
@@ -100,6 +103,7 @@ export default function AdminDashboard() {
         setMetaDescription('');
         setKeywords('');
         setTags([]);
+        setCoverImage(null);
         fetchPosts();
       }
     } catch (error) {
@@ -117,6 +121,7 @@ export default function AdminDashboard() {
     setMetaDescription(post.metaDescription || '');
     setKeywords(post.keywords || '');
     setTags(post.tags || []);
+    setCoverImage(post.coverImage || null);
     setEditingPost(post);
   };
 
@@ -159,6 +164,7 @@ export default function AdminDashboard() {
           metaDescription,
           keywords,
           tags,
+          coverImage,
         }),
       });
 
@@ -173,6 +179,7 @@ export default function AdminDashboard() {
         setMetaDescription('');
         setKeywords('');
         setTags([]);
+        setCoverImage(null);
         fetchPosts();
       }
     } catch (error) {
@@ -280,6 +287,11 @@ export default function AdminDashboard() {
                   placeholder="Keywords (SEO)"
                   value={keywords}
                   onChange={(e) => setKeywords(e.target.value)}
+                />
+                <Input
+                  placeholder="Cover Image URL"
+                  value={coverImage || ''}
+                  onChange={(e) => setCoverImage(e.target.value)}
                 />
                 <div className="flex gap-2">
                   <Input
