@@ -26,9 +26,47 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     const post = await getBlogPost(params.slug);
     if (!post) return { title: 'Post Not Found' };
     
+    const description = post.metaDescription || post.content;
+    
     return {
       title: post.title,
-      description: post.content.substring(0, 160),
+      description,
+      keywords: post.keywords, // assuming post.tags is string[]
+      authors: [{ name: 'Sahil Kumar Singh' }],
+      publisher: 'Sahil Kumar Singh',
+      openGraph: {
+        title: post.title,
+        description,
+        type: 'article',
+        publishedTime: post.createdAt.toISOString(),
+        url: `/blogs/${post.slug}`,
+        images: [
+          {
+            url: post.coverImage || '/default-blog-image.jpg',
+            width: 1200,
+            height: 630,
+            alt: post.title,
+          },
+        ],
+        tags: post.tags || [],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: post.title,
+        description,
+        images: [post.coverImage || '/default-blog-image.jpg'],
+      },
+      alternates: {
+        canonical: `/blogs/${post.slug}`,
+      },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+        },
+      },
     };
   } catch (error) {
     console.error('Error generating metadata:', error);

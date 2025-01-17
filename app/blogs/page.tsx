@@ -22,7 +22,7 @@ export default async function BlogsPage() {
           {blogPosts
             .filter(post => post.published)
             .map((post) => {
-              const plainDescription = post.content
+              const description = post.metaDescription || post.content
                 .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
                 .replace(/[#*`_~]/g, '')
                 .substring(0, 150) + '...';
@@ -32,8 +32,10 @@ export default async function BlogsPage() {
                   key={post.slug}
                   slug={post.slug}
                   title={post.title}
-                  description={plainDescription}
+                  description={description}
                   date={post.createdAt.toLocaleDateString()}
+                  tags={post.tags}
+                  coverImage={post.coverImage}
                 />
               );
             })}

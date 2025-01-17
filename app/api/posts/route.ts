@@ -6,13 +6,21 @@ import { z } from 'zod';
 const PostSchema = z.object({
   title: z.string().min(1, "Title is required"),
   content: z.string().min(1, "Content is required"),
+  metaDescription: z.string().optional(),
+  keywords: z.string().optional(),
+  tags: z.array(z.string()).optional(),
   published: z.boolean(),
+  coverImage: z.string().optional(),
 });
 
 const PostUpdateSchema = z.object({
   title: z.string().min(1, "Title is required").optional(),
   content: z.string().min(1, "Content is required").optional(),
+  metaDescription: z.string().optional(),
+  keywords: z.string().optional(),
+  tags: z.array(z.string()).optional(),
   published: z.boolean().optional(),
+  coverImage: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -85,6 +93,9 @@ export async function GET() {
         content: true,
         published: true,
         createdAt: true,
+        metaDescription: true,
+        keywords: true,
+        tags: true,
       },
       orderBy: { createdAt: 'desc' },
     });

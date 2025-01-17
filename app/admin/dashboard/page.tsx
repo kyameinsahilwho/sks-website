@@ -34,16 +34,23 @@ const MDXEditor = dynamic(
 );
 
 interface Post {
-  slug: string;  // Changed from id to slug
+  slug: string;
   title: string;
   content: string;
   published: boolean;
   createdAt: string;
+  metaDescription?: string;
+  keywords?: string;
+  tags: string[];
 }
 
 export default function AdminDashboard() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [metaDescription, setMetaDescription] = useState('');
+  const [keywords, setKeywords] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
@@ -77,6 +84,9 @@ export default function AdminDashboard() {
           title,
           content,
           published: true,
+          metaDescription,
+          keywords,
+          tags,
         }),
       });
 
@@ -87,6 +97,9 @@ export default function AdminDashboard() {
         });
         setTitle('');
         setContent('');
+        setMetaDescription('');
+        setKeywords('');
+        setTags([]);
         fetchPosts();
       }
     } catch (error) {
@@ -101,6 +114,9 @@ export default function AdminDashboard() {
   const handleEditPost = (post: Post) => {
     setTitle(post.title);
     setContent(post.content);
+    setMetaDescription(post.metaDescription || '');
+    setKeywords(post.keywords || '');
+    setTags(post.tags || []);
     setEditingPost(post);
   };
 
@@ -140,6 +156,9 @@ export default function AdminDashboard() {
           title,
           content,
           published: editingPost.published,
+          metaDescription,
+          keywords,
+          tags,
         }),
       });
 
@@ -151,6 +170,9 @@ export default function AdminDashboard() {
         setEditingPost(null);
         setTitle('');
         setContent('');
+        setMetaDescription('');
+        setKeywords('');
+        setTags([]);
         fetchPosts();
       }
     } catch (error) {
@@ -218,6 +240,17 @@ export default function AdminDashboard() {
     })
   ];
 
+  const addTag = () => {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setTags([...tags, tagInput.trim()]);
+      setTagInput('');
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
   return (
     <div className="container py-10">
       <Card>
@@ -238,6 +271,35 @@ export default function AdminDashboard() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
+                <Input
+                  placeholder="Meta Description (SEO)"
+                  value={metaDescription}
+                  onChange={(e) => setMetaDescription(e.target.value)}
+                />
+                <Input
+                  placeholder="Keywords (SEO)"
+                  value={keywords}
+                  onChange={(e) => setKeywords(e.target.value)}
+                />
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add tag"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addTag()}
+                  />
+                  <Button type="button" onClick={addTag}>Add Tag</Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {tags.map(tag => (
+                    <span key={tag} className="bg-muted px-2 py-1 rounded-full text-sm flex items-center gap-1">
+                      {tag}
+                      <button onClick={() => removeTag(tag)} className="text-muted-foreground hover:text-foreground">
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
               </div>
               <div className="space-y-2 prose-container">
                 <MDXEditor

@@ -1,6 +1,4 @@
-import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter';
 import prisma from './prisma';
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
@@ -12,6 +10,11 @@ export interface BlogPost {
   published: boolean;
   createdAt: Date;
   updatedAt: Date;
+  tags: string[];
+  metaDescription?: string | null;
+  keywords?: string | null;
+  coverImage?: string | null;
+
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {

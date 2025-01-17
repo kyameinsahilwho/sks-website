@@ -14,6 +14,10 @@ export async function GET(
         content: true,
         published: true,
         createdAt: true,
+        metaDescription: true,
+        keywords: true,
+        tags: true,
+        coverImage: true,
       }
     });
     
