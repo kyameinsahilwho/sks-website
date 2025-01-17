@@ -1,23 +1,15 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { isValidObjectId } from '@/lib/utils';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { slug: string } }
 ) {
   try {
-    if (!isValidObjectId(params.id)) {
-      return NextResponse.json(
-        { error: 'Invalid post ID format' }, 
-        { status: 400 }
-      );
-    }
-
     const post = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { slug: params.slug },
       select: {
-        id: true,
+        slug: true,
         title: true,
         content: true,
         published: true,

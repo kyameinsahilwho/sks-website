@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { generateSlug } from '@/lib/utils';
 import { z } from 'zod';
-import { isValidObjectId } from '@/lib/utils';
 
 const PostSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -9,13 +9,23 @@ const PostSchema = z.object({
   published: z.boolean(),
 });
 
+const PostUpdateSchema = z.object({
+  title: z.string().min(1, "Title is required").optional(),
+  content: z.string().min(1, "Content is required").optional(),
+  published: z.boolean().optional(),
+});
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
     const validated = PostSchema.parse(data);
+    const slug = generateSlug(validated.title);
     
     const post = await prisma.post.create({
-      data: validated,
+      data: {
+        ...validated,
+        slug,
+      },
     });
 
     return NextResponse.json(post);
@@ -30,20 +40,17 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const data = await request.json();
-    const { id, ...updateData } = data;
+    const { slug, ...updateData } = data;
     
-    if (!isValidObjectId(id)) {
-      return NextResponse.json(
-        { error: 'Invalid post ID format' }, 
-        { status: 400 }
-      );
-    }
-
-    const validated = PostSchema.parse(updateData);
+    const validated = PostUpdateSchema.parse(updateData);
+    const newSlug = validated.title ? generateSlug(validated.title) : slug;
     
     const post = await prisma.post.update({
-      where: { id },
-      data: validated,
+      where: { slug },
+      data: {
+        ...validated,
+        ...(validated.title && { slug: newSlug }),
+      },
     });
 
     return NextResponse.json(post);
@@ -57,17 +64,10 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const { id } = await request.json();
+    const { slug } = await request.json();
     
-    if (!isValidObjectId(id)) {
-      return NextResponse.json(
-        { error: 'Invalid post ID format' }, 
-        { status: 400 }
-      );
-    }
-
     await prisma.post.delete({
-      where: { id },
+      where: { slug },
     });
 
     return NextResponse.json({ success: true });
@@ -79,11 +79,8 @@ export async function DELETE(request: Request) {
 export async function GET() {
   try {
     const posts = await prisma.post.findMany({
-      where: {
-        published: true,
-      },
       select: {
-        id: true,
+        slug: true,
         title: true,
         content: true,
         published: true,
@@ -92,7 +89,6 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     });
     
-    console.log('API: Fetched posts:', posts); // Debug log
     return NextResponse.json(posts);
   } catch (error) {
     console.error('Database error:', error);

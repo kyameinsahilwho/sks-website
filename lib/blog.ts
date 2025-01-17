@@ -2,12 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import prisma from './prisma';
-import { isValidObjectId } from './utils';
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
 export interface BlogPost {
-  id: string;
+  slug: string;
   title: string;
   content: string;
   published: boolean;
@@ -25,39 +24,28 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
         createdAt: 'desc',
       },
     });
-
-    return posts.map(post => ({
-      ...post,
-      createdAt: post.createdAt,
-      updatedAt: post.updatedAt,
-    }));
+    return posts;
   } catch (error) {
-    console.error('Error fetching blog posts:', error);
-    return [];
+    console.error('Error fetching all blog posts:', error);
+    throw error;
   }
 }
 
-export async function getBlogPost(id: string): Promise<BlogPost | null> {
-  if (!isValidObjectId(id)) {
-    return null;
-  }
-
+export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
     const post = await prisma.post.findUnique({
       where: {
-        id: id,
+        slug: slug,
       },
     });
     
-    if (!post) return null;
+    if (!post) {
+      return null;
+    }
 
-    return {
-      ...post,
-      createdAt: post.createdAt,
-      updatedAt: post.updatedAt,
-    };
+    return post;
   } catch (error) {
     console.error('Error fetching blog post:', error);
-    return null;
+    throw error;
   }
 }

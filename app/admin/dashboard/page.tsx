@@ -24,6 +24,9 @@ import {
   linkDialogPlugin,
   codeBlockPlugin,
 } from '@mdxeditor/editor';
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const MDXEditor = dynamic(
   () => import('@mdxeditor/editor').then((mod) => mod.MDXEditor),
@@ -31,7 +34,7 @@ const MDXEditor = dynamic(
 );
 
 interface Post {
-  id: string;
+  slug: string;  // Changed from id to slug
   title: string;
   content: string;
   published: boolean;
@@ -43,6 +46,7 @@ export default function AdminDashboard() {
   const [content, setContent] = useState('');
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -100,12 +104,12 @@ export default function AdminDashboard() {
     setEditingPost(post);
   };
 
-  const handleDeletePost = async (id: string) => {
+  const handleDeletePost = async (slug: string) => {
     try {
-      const res = await fetch(`/api/posts/${id}`, {
+      const res = await fetch('/api/posts', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ slug }),
       });
 
       if (res.ok) {
@@ -123,6 +127,74 @@ export default function AdminDashboard() {
       });
     }
   };
+
+  const handleUpdatePost = async () => {
+    if (!editingPost) return;
+    
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: editingPost.slug,
+          title,
+          content,
+          published: editingPost.published,
+        }),
+      });
+
+      if (res.ok) {
+        toast({
+          title: "Success",
+          description: "Post updated successfully",
+        });
+        setEditingPost(null);
+        setTitle('');
+        setContent('');
+        fetchPosts();
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update post",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const togglePublished = async (slug: string, currentState: boolean) => {
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug,
+          published: !currentState,
+        }),
+      });
+
+      if (res.ok) {
+        toast({
+          title: "Success",
+          description: `Post ${!currentState ? 'published' : 'unpublished'} successfully`,
+        });
+        fetchPosts();
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update post status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const filteredPosts = posts.filter(post => {
+    if (filter === 'all') return true;
+    if (filter === 'published') return post.published;
+    if (filter === 'draft') return !post.published;
+    return true;
+  });
 
   const editorPlugins = [
     headingsPlugin(),
@@ -175,24 +247,54 @@ export default function AdminDashboard() {
                   contentEditableClassName="prose dark:prose-invert max-w-none min-h-[200px] p-4"
                 />
               </div>
-              <Button onClick={handleCreatePost}>
+              <Button onClick={editingPost ? handleUpdatePost : handleCreatePost}>
                 {editingPost ? 'Update Post' : 'Create Post'}
               </Button>
             </TabsContent>
             
             <TabsContent value="manage">
               <div className="space-y-4">
-                {Array.isArray(posts) && posts.map((post) => (
-                  <Card key={post.id}>
+                <div className="flex justify-end">
+                  <Select
+                    defaultValue="all"
+                    onValueChange={(value: 'all' | 'published' | 'draft') => setFilter(value)}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Filter posts" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Posts</SelectItem>
+                      <SelectItem value="published">Published</SelectItem>
+                      <SelectItem value="draft">Drafts</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filteredPosts.map((post) => (
+                  <Card key={post.slug} className={!post.published ? "opacity-60" : ""}>
                     <CardContent className="pt-6">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-semibold">{post.title}</h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold">{post.title}</h3>
+                            {!post.published && (
+                              <span className="text-xs bg-muted px-2 py-1 rounded">Draft</span>
+                            )}
+                          </div>
                           <p className="text-sm text-muted-foreground">
                             {new Date(post.createdAt).toLocaleDateString()}
                           </p>
                         </div>
-                        <div className="space-x-2">
+                        <div className="space-x-2 flex items-center">
+                          <div className="flex items-center space-x-2">
+                            <Switch
+                              id={`publish-${post.slug}`}
+                              checked={post.published}
+                              onCheckedChange={() => togglePublished(post.slug, post.published)}
+                            />
+                            <Label htmlFor={`publish-${post.slug}`}>
+                              {post.published ? 'Published' : 'Draft'}
+                            </Label>
+                          </div>
                           <Button
                             variant="outline"
                             size="sm"
@@ -203,7 +305,7 @@ export default function AdminDashboard() {
                           <Button
                             variant="destructive"
                             size="sm"
-                            onClick={() => handleDeletePost(post.id)}
+                            onClick={() => handleDeletePost(post.slug)}
                           >
                             Delete
                           </Button>
