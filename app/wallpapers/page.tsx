@@ -6,42 +6,42 @@ import Image from "next/image";
 const wallpapers = [
   {
     id: 1,
-    src: "/images/wall1.png",
+    src: "/images/wall1.webp",
     alt: "Minimal aesthetic wallpaper 1",
   },
   {
     id: 2,
-    src: "/images/wall2.png",
+    src: "/images/wall2.webp",
     alt: "Minimal aesthetic wallpaper 2",
   },
   {
     id: 3,
-    src: "/images/wall3.png",
+    src: "/images/wall3.webp",
     alt: "Minimal aesthetic wallpaper 3",
   },
   {
     id: 4,
-    src: "/images/wall4.png",
+    src: "/images/wall4.webp",
     alt: "Minimal aesthetic wallpaper 4",
   },
   {
     id: 5,
-    src: "/images/wall5.png",
+    src: "/images/wall5.webp",
     alt: "Minimal aesthetic wallpaper 5",
   },
   {
     id: 6,
-    src: "/images/wall6.png",
+    src: "/images/wall6.webp",
     alt: "Minimal aesthetic wallpaper 6",
   },
   {
     id: 7,
-    src: "/images/wall7.png",
+    src: "/images/wall7.webp",
     alt: "Minimal aesthetic wallpaper 7",
   },
   {
     id: 8,
-    src: "/images/wall8.png",
+    src: "/images/wall8.webp",
     alt: "Minimal aesthetic wallpaper 8",
   },
 ];
@@ -65,7 +65,7 @@ export default function WallpapersPage() {
   return (
     <div className="relative min-h-screen w-full bg-gradient-to-b from-background to-muted/20">
       <div
-        className="absolute inset-0 opacity-[0.5]"
+        className="absolute inset-0 opacity-[0.5] animate-float-fast"
         style={{
           backgroundImage:
             "radial-gradient(circle at center, #808080 1px, transparent 1px)",
