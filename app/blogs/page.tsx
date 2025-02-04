@@ -1,14 +1,14 @@
 import { BlogCard } from "@/components/sections/blog/blog-card";
-import { getAllBlogPosts } from "@/lib/blog";
 import { Playfair_Display } from "next/font/google";
+import { BlogPost } from "@/lib/blog";
 
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["600"] });
 
 export default async function BlogsPage() {
   try {
-    const blogPosts = await getAllBlogPosts();
-    console.log('Fetched blog posts with IDs:', blogPosts.map(p => p.slug)); // Debug log
-
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts`);
+    const blogPosts: BlogPost[] = await response.json();
+    
     if (!blogPosts || blogPosts.length === 0) {
       return (
         <div className={`container py-12 ${playfair.className} antialiased`}>
@@ -36,7 +36,7 @@ export default async function BlogsPage() {
                   slug={post.slug}
                   title={post.title}
                   description={description}
-                  date={post.createdAt.toLocaleDateString()}
+                  date={new Date(post.createdAt).toLocaleDateString()}
                   tags={post.tags}
                   coverImage={post.coverImage}
                 />
@@ -47,6 +47,11 @@ export default async function BlogsPage() {
     );
   } catch (error) {
     console.error('Error in BlogsPage:', error);
-    throw error; // This will trigger the error boundary
+    return (
+      <div className={`container py-12 ${playfair.className} antialiased`}>
+        <h1 className="mb-8 text-4xl font-bold">Blogs</h1>
+        <p>Failed to load blog posts.</p>
+      </div>
+    );
   }
 }

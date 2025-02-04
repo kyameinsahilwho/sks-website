@@ -94,6 +94,7 @@ export async function GET() {
         published: true,
         createdAt: true,
         metaDescription: true,
+        coverImage: true,
         keywords: true,
         tags: true,
       },

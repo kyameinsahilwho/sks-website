@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
-import { getAllBlogPosts, getBlogPost } from '@/lib/blog';
 import { BlogContent } from '@/components/sections/blog/blog-content';
 import type { Metadata } from 'next';
 import { Playfair_Display } from "next/font/google";
+import { BlogPost } from "@/lib/blog";
 
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["600"] });
 
@@ -14,7 +14,8 @@ interface BlogPostPageProps {
 
 export async function generateStaticParams() {
   try {
-    const posts = await getAllBlogPosts();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts`);
+    const posts: BlogPost[] = await response.json();
     return posts?.filter(post => post.published).map((post) => ({
       slug: post.slug,
     })) || [];
@@ -26,7 +27,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   try {
-    const post = await getBlogPost(params.slug);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${params.slug}`);
+    const post: BlogPost = await response.json();
     if (!post) return { title: 'Post Not Found' };
     
     const description = post.metaDescription || post.content;
@@ -41,7 +43,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
         title: post.title,
         description,
         type: 'article',
-        publishedTime: post.createdAt.toISOString(),
+        publishedTime: new Date(post.createdAt).toISOString(),
         url: `/blogs/${post.slug}`,
         images: [
           {
@@ -79,7 +81,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   try {
-    const post = await getBlogPost(params.slug);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${params.slug}`);
+    const post: BlogPost = await response.json();
     
     if (!post || !post.published) {
       notFound();
@@ -89,7 +92,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <article className={`container py-8 ${playfair.className} antialiased`}>
         <h1 className="mb-4 text-4xl font-bold">{post.title}</h1>
         <div className="mb-8 text-gray-600 text-xl">
-          {post.createdAt.toLocaleDateString()}
+          {new Date(post.createdAt).toLocaleDateString()}
         </div>
         <BlogContent content={post.content} />
       </article>
