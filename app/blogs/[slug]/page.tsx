@@ -81,7 +81,9 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${params.slug}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${params.slug}`, {
+      next: { revalidate: 60 } // Revalidate every 60 seconds
+    });
     const post: BlogPost = await response.json();
     
     if (!post || !post.published) {

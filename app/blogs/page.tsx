@@ -6,7 +6,9 @@ const playfair = Playfair_Display({ subsets: ["latin"], weight: ["600"] });
 
 export default async function BlogsPage() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts`, {
+      next: { revalidate: 60 } // Revalidate every 60 seconds
+    });
     const blogPosts: BlogPost[] = await response.json();
     
     if (!blogPosts || blogPosts.length === 0) {
