@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation';
 import { getAllBlogPosts, getBlogPost } from '@/lib/blog';
 import { BlogContent } from '@/components/sections/blog/blog-content';
 import type { Metadata } from 'next';
+import { Playfair_Display } from "next/font/google";
+
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["600"] });
 
 interface BlogPostPageProps {
   params: {
@@ -83,9 +86,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     }
 
     return (
-      <article className="container py-8">
+      <article className={`container py-8 ${playfair.className} antialiased`}>
         <h1 className="mb-4 text-4xl font-bold">{post.title}</h1>
-        <div className="mb-8 text-gray-600">
+        <div className="mb-8 text-gray-600 text-xl">
           {post.createdAt.toLocaleDateString()}
         </div>
         <BlogContent content={post.content} />

@@ -1,5 +1,8 @@
 import { BlogCard } from "@/components/sections/blog/blog-card";
 import { getAllBlogPosts } from "@/lib/blog";
+import { Playfair_Display } from "next/font/google";
+
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["600"] });
 
 export default async function BlogsPage() {
   try {
@@ -8,16 +11,16 @@ export default async function BlogsPage() {
 
     if (!blogPosts || blogPosts.length === 0) {
       return (
-        <div className="container py-12">
-          <h1 className="mb-8 text-4xl font-bold">Blog</h1>
+        <div className={`container py-12 ${playfair.className} antialiased`}>
+          <h1 className="mb-8 text-4xl font-bold">Blogs</h1>
           <p>No blog posts found.</p>
         </div>
       );
     }
 
     return (
-      <div className="container py-12">
-        <h1 className="mb-8 text-4xl font-bold">Blog</h1>
+      <div className={`container py-12 ${playfair.className} antialiased`}>
+        <h1 className="mb-8 text-4xl font-bold">Blogs</h1>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {blogPosts
             .filter(post => post.published)

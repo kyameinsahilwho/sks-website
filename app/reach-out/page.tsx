@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function ContactSection() {
   return (
-    <div className="relative flex flex-col min-h-[calc(100vh-4rem)] md:flex-row items-center justify-center gap-6 p-5 overflow-hidden bg-white dark:bg-gray-900">
+    <div className="relative flex flex-col min-h-[calc(100vh-4rem)] md:flex-row items-center justify-center gap-6 p-5 overflow-hidden bg-white dark:bg-gray-900 antialiased">
       {/* SVG Background */}
       
       {/* Image Card */}
