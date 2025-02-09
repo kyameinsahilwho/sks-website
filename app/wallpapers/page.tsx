@@ -2,6 +2,8 @@
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 const wallpapers = [
   {
@@ -109,6 +111,13 @@ export default function WallpapersPage() {
                   className="object-cover transition-transform group-hover:scale-105"
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                 />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/50">
+                  <Button variant="secondary" size="icon" asChild>
+                    <a href={wallpaper.src} download={wallpaper.alt} className="flex items-center justify-center">
+                      <Download className="h-4 w-4 text-black" />
+                    </a>
+                  </Button>
+                </div>
               </Card>
             </motion.div>
           ))}

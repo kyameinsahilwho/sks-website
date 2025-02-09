@@ -77,6 +77,21 @@
   50% { transform: translateY(-10px); }
 }
 
+.bg-grid-linear {
+  background-color: #ffffff; /* Adjust to your preferred background color */
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px; /* Adjust the grid size as needed */
+}
+
+ .bg-grid-linear-dark {
+  background-color: #121212; /* Dark mode background color */
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
 .animate-float-slow {
   animation: float-slow 8s ease-in-out infinite;
 }
