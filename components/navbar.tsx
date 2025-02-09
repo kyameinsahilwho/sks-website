@@ -13,7 +13,6 @@ const navLinks = [
   { href: "/about", label: "Read Me" },
   { href: "/wallpapers", label: "Wallpapers" },
   { href: "/reach-out", label: "Reach Out" },
-  { href: "/timeline", label: "Timeline" },
   { href: "/blogs", label: "Blogs" },
 ];
 
