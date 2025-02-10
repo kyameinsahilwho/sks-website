@@ -33,7 +33,7 @@ export default function AboutPage() {
               <CardTitle className="text-2xl font-bold text-teal-600 dark:text-teal-400 text-center">About Me</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-lg text-muted-foreground mb-4 dark:text-gray-400 text-center">
+              <p className="text-lg text-justify text-muted-foreground mb-4 dark:text-gray-400">
                 Hello there! I'm Sahil Kumar Singh, a passionate web developer from India. I am passionate about <span className="underline">design</span>, <span className="underline">philosophy</span>, and <span className="underline">technology</span>. The purpose of this website is to share my journey and express my creativity. Feel free to explore my work, read my blogs, and connect with me😉.
               </p>
 

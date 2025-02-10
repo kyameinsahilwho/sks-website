@@ -163,7 +163,7 @@ export default function Home() {
             Creative Space
           </RoughNotation>
         </h1>
-        <p className="mt-9 max-w-2xl text-lg text-muted-foreground">
+        <p className="mt-9 text-justify max-w-2xl text-lg text-muted-foreground">
           Hi, I'm{" "}
           <RoughNotation
             type="underline"
